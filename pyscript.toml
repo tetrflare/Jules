@@ -11,7 +11,8 @@ interpreter = "micropython"
 packages = [
   "numpy",
   "pandas",
-  "matplotlib"
+  "matplotlib",
+  "plotly"
 ]
 
 # The [[fetch]] directive maps local files and directories into Pyodide's
