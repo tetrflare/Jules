@@ -3,16 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>Versatile PyScript Canvas for Scientific Computing</title>
+
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        #controls, #status-area, #output-area { margin-bottom: 1.5em; padding: 1em; border: 1px solid #ccc; border-radius: 5px; }
+        #controls button { margin-left: 1em; }
+        #progress-bar { width: 100%; }
+        #error-display { color: red; font-weight: bold; }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/mini-coi@0.0.5/dist/mini-coi.js" scope="./"></script>
+
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+    <py-config src="./pyscript.toml"></py-config>
+
+    <script src="./js/bridge.js"></script>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
 </head>
 <body>
-    <h1>Hello, World!</h1>
+    <h1>Versatile PyScript Canvas</h1>
+    <p>A robust template for running Python simulations and data analysis in the browser.</p>
 
-    <h2>My Projects</h2>
-    <ul>
-        <li><a href="#">Project 1</a></li>
-        <li><a href="#">Project 2</a></li>
-        <li><a href="#">Project 3</a></li>
-    </ul>
+    <div id="controls">
+        <label for="file-input">Upload Data File (.csv):</label>
+        <input type="file" id="file-input" accept=".csv">
+        <button id="run-button">Run Analysis</button>
+    </div>
+
+    <div id="status-area">
+        <p id="status-message">Application ready. Please upload a file and click "Run Analysis".</p>
+        <progress id="progress-bar" value="0" max="1" style="display:none;"></progress>
+    </div>
+
+    <div id="output-area">
+        <div id="plot-output"></div>
+        <div id="table-output"></div>
+    </div>
+
+    <div id="error-display"></div>
+
+    <py-script src="./src/main.py"></py-script>
+
 </body>
 </html>

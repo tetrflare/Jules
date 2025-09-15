@@ -1,0 +1,24 @@
+# This file defines the entire Python environment for the application,
+# ensuring reproducibility and modularity. [50]
+
+# Use the fast-loading MicroPython for the main thread to ensure a responsive UI.
+# The heavy lifting will be done by a Pyodide worker. [16, 22]
+interpreter = "micropython"
+
+# The 'packages' directive here is technically for the main (MicroPython) interpreter,
+# but we define the full list needed by the Pyodide worker. This list will be passed
+# to the worker upon its creation.
+packages = [
+  "numpy",
+  "pandas",
+  "matplotlib"
+]
+
+# The [[fetch]] directive maps local files and directories into Pyodide's
+# virtual filesystem, allowing for standard Python imports. [25]
+[[fetch]]
+from = "./src/"
+to_folder = "src"
+
+[[fetch]]
+files = ["./data/sample.csv"]
