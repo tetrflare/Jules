@@ -1,9 +1,9 @@
 # This file defines the entire Python environment for the application,
 # ensuring reproducibility and modularity. [50]
 
-# Use the fast-loading MicroPython for the main thread to ensure a responsive UI.
-# The heavy lifting will be done by a Pyodide worker. [16, 22]
-interpreter = "micropython"
+# Use Pyodide as the main interpreter, as the simulator requires packages
+# like pandas and plotly that are not available in MicroPython.
+interpreter = "pyodide"
 
 # The 'packages' directive here is technically for the main (MicroPython) interpreter,
 # but we define the full list needed by the Pyodide worker. This list will be passed

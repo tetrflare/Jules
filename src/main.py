@@ -47,16 +47,16 @@ class CVDState:
     def update_ui(self):
         """Update all UI elements from the state object's values."""
         # Update sliders and their corresponding value displays
-        self.elements['c2h2_flow_slider'].element.value = f"{self.c2h2_flow:.1f}"
+        self.elements['c2h2_flow_slider'].element.value = self.c2h2_flow
         self.elements['c2h2_flow_value'].write(f"{self.c2h2_flow:.1f}")
 
-        self.elements['ar_flow_slider'].element.value = f"{self.ar_flow:.1f}"
+        self.elements['ar_flow_slider'].element.value = self.ar_flow
         self.elements['ar_flow_value'].write(f"{self.ar_flow:.1f}")
 
-        self.elements['total_pressure_slider'].element.value = f"{self.total_pressure:.2f}"
+        self.elements['total_pressure_slider'].element.value = self.total_pressure
         self.elements['total_pressure_value'].write(f"{self.total_pressure:.2f}")
 
-        self.elements['contaminant_pp_slider'].element.value = f"{self.contaminant_pp:.3f}"
+        self.elements['contaminant_pp_slider'].element.value = self.contaminant_pp
         self.elements['contaminant_pp_value'].write(f"{self.contaminant_pp:.3f}")
 
         # If a parameter is being calculated, the C2H2 PP value is the target.
