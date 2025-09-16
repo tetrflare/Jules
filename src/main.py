@@ -1,5 +1,5 @@
 import js
-from pyscript import Element
+from pyscript import Element, create_proxy
 import pandas as pd
 import plotly.express as px
 import warnings
@@ -98,7 +98,6 @@ class CVDState:
         """Solves for C2H2 flow required to meet the target C2H2 P.P."""
         process_pressure = self.total_pressure - self.contaminant_pp
         if self.target_c2h2_pp > 0 and process_pressure > self.target_c2h2_pp:
-            # Derived from: P_c2h2 * (F_c2h2 + F_ar) = F_c2h2 * P_proc  => F_c2h2 = (P_c2h2 * F_ar) / (P_proc - P_c2h2)
             self.c2h2_flow = (self.target_c2h2_pp * self.ar_flow) / (process_pressure - self.target_c2h2_pp)
         else:
             self.c2h2_flow = 0
@@ -107,7 +106,6 @@ class CVDState:
         """Solves for Ar flow required to meet the target C2H2 P.P."""
         process_pressure = self.total_pressure - self.contaminant_pp
         if self.c2h2_flow > 0 and self.target_c2h2_pp > 0 and process_pressure > self.target_c2h2_pp:
-            # Derived from: F_ar = F_c2h2 * (P_proc / P_c2h2 - 1)
             self.ar_flow = self.c2h2_flow * ((process_pressure / self.target_c2h2_pp) - 1)
         else:
             self.ar_flow = 0
@@ -117,8 +115,6 @@ class CVDState:
         self.active_slider_id = active_slider_id
         self.read_ui()
 
-        # The 'calculated_param' determines which variable to solve for to meet the target C2H2 P.P.
-        # The 'c2h2_pp' option is a special case where the calculated parameter is actually total_pressure.
         if self.calculated_param == 'total_pressure' or self.calculated_param == 'c2h2_pp':
             self.solve_for_total_pressure()
         elif self.calculated_param == 'c2h2_flow':
@@ -126,9 +122,7 @@ class CVDState:
         elif self.calculated_param == 'ar_flow':
             self.solve_for_ar_flow()
 
-        # Always calculate the resulting C2H2 P.P. for display and graphing consistency.
         self.calculate_c2h2_pp()
-
         self.update_ui()
         self.update_graph()
 
@@ -139,7 +133,6 @@ class CVDState:
         ar_range = np.linspace(max(ar_min, 1), ar_max, 50)
 
         pressure_range = []
-        # The plot always shows the curve needed to achieve the target C2H2 P.P.
         c2h2_pp_for_calc = self.target_c2h2_pp
 
         for ar_val in ar_range:
@@ -176,16 +169,30 @@ class CVDState:
 state = CVDState()
 
 def setup_listeners():
-    """Add event listeners to all interactive controls."""
+    """Add event listeners to all interactive controls using create_proxy."""
+
+    # Define a generic handler for events that don't need specific data
+    def generic_handler(event):
+        state.update_simulation()
+
+    # Define a handler for sliders to pass their ID
+    def slider_handler(event):
+        state.update_simulation(active_slider_id=event.target.id)
+
+    # Create proxies that PyScript can use to call the Python functions
+    generic_proxy = create_proxy(generic_handler)
+    slider_proxy = create_proxy(slider_handler)
+
+    # Add listeners to all sliders
     for name, el in state.elements.items():
         if 'slider' in name:
-            el.element.addEventListener('input', lambda event, name=name: state.update_simulation(active_slider_id=name))
+            el.element.addEventListener('input', slider_proxy)
 
-    state.elements['c2h2_pp_input'].element.addEventListener('change', lambda event: state.update_simulation())
-
+    # Add listeners to the other controls
+    state.elements['c2h2_pp_input'].element.addEventListener('change', generic_proxy)
     radio_buttons = js.document.querySelectorAll('input[name="locked_param"]')
     for rb in radio_buttons:
-        rb.addEventListener('change', lambda event: state.update_simulation())
+        rb.addEventListener('change', generic_proxy)
 
 # Run the initial setup
 setup_listeners()
